@@ -2,25 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import Link from 'next/link'; // 1. Import the Link component for navigation
-import { useRouter } from 'next/navigation'; // 2. Import the router for smoother redirects
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function MyTicketsPage() {
     const [tickets, setTickets] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState('');
-    const { token, isLoggedIn, isLoading: isAuthLoading } = useAuth(); // 3. Get the auth loading state
+    const { token, isLoggedIn, isLoading: isAuthLoading } = useAuth();
     const router = useRouter();
     const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
-        // 4. Wait until the auth state is confirmed before doing anything
         if (isAuthLoading) {
             return; 
         }
 
         if (!isLoggedIn) {
-            router.push('/login'); // Use router for a smoother redirect
+            router.push('/login');
             return;
         }
 
@@ -43,7 +42,6 @@ export default function MyTicketsPage() {
             }
         };
 
-        // Only fetch if we have a token
         if (token) {
             fetchTickets();
         }
@@ -63,9 +61,10 @@ export default function MyTicketsPage() {
             <div className="max-w-3xl mx-auto p-4 sm:p-6">
                 <div className="flex justify-between items-center mb-8">
                     <h1 className="text-4xl font-bold text-gray-800">My Tickets</h1>
-                    <a href="/" className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg text-sm hover:bg-blue-700 transition-colors">
+                    {/* --- THIS IS THE FIX --- */}
+                    <Link href="/" className="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg text-sm hover:bg-blue-700 transition-colors">
                         Book New Ticket
-                    </a>
+                    </Link>
                 </div>
                 {tickets.length === 0 ? (
                     <div className="text-center bg-white p-10 rounded-lg shadow-sm">
@@ -74,12 +73,10 @@ export default function MyTicketsPage() {
                 ) : (
                     <div className="space-y-4">
                         {tickets.map(ticket => (
-                            // 5. Each ticket is now a clickable link to its detail page
                             <Link href={`/my-tickets/${ticket.ticket_id}`} key={ticket.ticket_id}>
                                 <div className="bg-white p-5 rounded-lg shadow-sm border border-gray-200 hover:shadow-lg hover:border-blue-500 cursor-pointer transition-all duration-200">
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            {/* 6. Display the FROM and TO journey details */}
                                             <p className="font-bold text-lg text-gray-800">
                                                 {ticket.from_stop || 'N/A'} → {ticket.to_stop || 'N/A'}
                                             </p>
