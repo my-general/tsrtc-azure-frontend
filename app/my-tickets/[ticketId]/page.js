@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import React from 'react'; // 1. Import React to use the 'use' hook
+import React from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import Ticket from '../../../app/Ticket';
+import Link from 'next/link'; // <-- 1. IMPORT THE LINK COMPONENT
 
 export default function TicketDetailPage({ params }) {
-    // 2. Use React.use() to "unwrap" the params from the promise
     const resolvedParams = React.use(params);
-    const { ticketId } = resolvedParams; // Now we can safely get ticketId
+    const { ticketId } = resolvedParams;
 
     const { token, isLoggedIn, isLoading: isAuthLoading } = useAuth();
     const [ticket, setTicket] = useState(null);
@@ -18,7 +18,7 @@ export default function TicketDetailPage({ params }) {
 
     useEffect(() => {
         if (isAuthLoading) {
-            return; // Wait for auth to be checked
+            return; 
         }
         if (!isLoggedIn) {
             window.location.href = '/login';
@@ -26,7 +26,7 @@ export default function TicketDetailPage({ params }) {
         }
 
         const fetchTicketDetails = async () => {
-            if (!token) return; // Don't fetch if token isn't ready
+            if (!token) return;
             try {
                 const res = await fetch(`${API_URL}/api/tickets/${ticketId}`, {
                     headers: { 'Authorization': `Bearer ${token}` }
@@ -53,7 +53,10 @@ export default function TicketDetailPage({ params }) {
          <div className="min-h-screen bg-gray-100 py-8 px-4">
             <div className="max-w-md mx-auto">
                 <div className="mb-4">
-                    <a href="/my-tickets" className="text-blue-600 hover:underline">← Back to All Tickets</a>
+                    {/* --- 2. THIS IS THE FIX --- */}
+                    <Link href="/my-tickets" className="text-blue-600 hover:underline">
+                        ← Back to All Tickets
+                    </Link>
                 </div>
                 <Ticket 
                     ticketInfo={ticket} 
