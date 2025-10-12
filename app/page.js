@@ -4,7 +4,6 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Ticket from './Ticket';
 import { useAuth } from '../context/AuthContext';
-import Link from 'next/link';
 
 export default function HomePageWrapper() {
   return (
@@ -36,7 +35,7 @@ function HomePage() {
   const [selectedRoute, setSelectedRoute] = useState('');
   const [selectedFrom, setSelectedFrom] = useState('');
   const [selectedTo, setSelectedTo] = useState('');
-  const [passengerCount, setPassengerCount] = useState(1); // <-- NEW: State for passenger count
+  const [passengerCount, setPassengerCount] = useState(1);
   
   // State for UI
   const [isLoading, setIsLoading] = useState(false);
@@ -60,8 +59,7 @@ function HomePage() {
           const res = await fetch(`${API_URL}/api/routes`);
           if (!res.ok) throw new Error('Could not fetch routes.');
           setAllRoutes(await res.json());
-        } catch (err)
-        {
+        } catch (err) {
           setError(err.message);
         } finally {
           setIsLoading(false);
@@ -116,13 +114,13 @@ function HomePage() {
     setError('');
     setFareInfo(null);
     setTicketData(null);
-    setPassengerCount(1); // Reset passenger count on new calculation
+    setPassengerCount(1);
     try {
       const res = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          routeId: selectedRoute, fromStopName: selectedFrom, toStopName: selectedTo, passengerCount: 1, // Always calculate for 1 initially
+          routeId: selectedRoute, fromStopName: selectedFrom, toStopName: selectedTo, passengerCount: 1,
         }),
       });
       if (!res.ok) {
@@ -130,8 +128,7 @@ function HomePage() {
         throw new Error(errorData.error || 'Could not calculate fare.');
       }
       const data = await res.json();
-      // Store the single fare separately for future calculations
-      setFareInfo({ ...data, singleFare: data.amount }); 
+      setFareInfo({ ...data, singleFare: data.amount });
     } catch (err) {
       setError(err.message);
     } finally {
@@ -146,7 +143,6 @@ function HomePage() {
       return;
     }
 
-    // First, create a new order with the correct total amount for all passengers
     const orderRes = await fetch(`${API_URL}/api/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -162,7 +158,7 @@ function HomePage() {
 
     const options = {
       key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-      amount: orderData.amount, // Use the final amount from the new order
+      amount: orderData.amount,
       currency: orderData.currency,
       name: "TSRTC e-Ticket",
       description: `Ticket for ${passengerCount} passenger(s) from ${selectedFrom} to ${selectedTo}`,
@@ -178,7 +174,7 @@ function HomePage() {
                 ...response,
                 fromStop: selectedFrom,
                 toStop: selectedTo,
-                passengerCount: passengerCount // <-- Send the passenger count for saving
+                passengerCount: passengerCount
             })
           });
           const result = await res.json();
@@ -206,10 +202,9 @@ function HomePage() {
   const handleNewBooking = () => { window.location.reload(); };
   const getStopKey = (stop, prefix, index) => { return `${prefix}-${selectedRoute}-${stop.stop_sequence}-${index}`.replace(/\s+/g, '-'); };
   
-  // <-- NEW: Functions to handle passenger count change
   const handlePassengerChange = (amount) => {
     const newCount = passengerCount + amount;
-    if (newCount >= 1 && newCount <= 10) { // Set a max limit of 10 tickets
+    if (newCount >= 1 && newCount <= 10) {
         setPassengerCount(newCount);
     }
   };
@@ -222,12 +217,12 @@ function HomePage() {
               <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left">TSRTC e-Ticket</h1>
               {isLoggedIn ? (
                   <div className="flex justify-center sm:justify-end gap-2">
-                      <Link href="/my-tickets" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 border border-blue-300 rounded-md hover:bg-blue-500 transition-colors">My Tickets</Link>
+                      <a href="/my-tickets" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 border border-blue-300 rounded-md hover:bg-blue-500 transition-colors">My Tickets</a>
                       <button onClick={logout} className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 bg-orange-500 rounded-md hover:bg-orange-600 transition-colors">Logout</button>
                   </div>
               ) : (
                   <div className="flex justify-center">
-                    <Link href="/login" className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition-colors text-sm sm:text-base">Login</Link>
+                    <a href="/login" className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition-colors text-sm sm:text-base">Login</a>
                   </div>
               )}
           </div>
@@ -236,7 +231,6 @@ function HomePage() {
         {isLoggedIn ? (
           ticketData ? (
             <div>
-              {/* Pass the passenger count to the final ticket */}
               <Ticket ticketInfo={ticketData} journeyInfo={{ from: selectedFrom, to: selectedTo, passengerCount: ticketData.passenger_count }} />
               <div className="p-4 sm:p-6">
                 <button onClick={handleNewBooking} className="w-full py-3 px-4 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold rounded-lg hover:from-blue-600 hover:to-blue-700 transition-colors text-sm sm:text-base">Book Another Ticket</button>
