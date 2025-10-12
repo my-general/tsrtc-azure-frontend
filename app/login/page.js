@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -67,9 +68,9 @@ export default function LoginPage() {
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                         <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left">TSRTC e-Ticket</h1>
                         <div className="flex justify-center">
-                            <a href="/" className="text-xs sm:text-sm px-3 py-1.5 bg-orange-500 rounded-md hover:bg-orange-600 transition-colors">
+                            <Link href="/" className="text-xs sm:text-sm px-3 py-1.5 bg-orange-500 rounded-md hover:bg-orange-600 transition-colors">
                                 ← Back Home
-                            </a>
+                            </Link>
                         </div>
                     </div>
                     <p className="text-center text-blue-100 font-medium text-sm sm:text-base">
