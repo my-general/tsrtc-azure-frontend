@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link'; // Add this import
 import Ticket from './Ticket';
 import { useAuth } from '../context/AuthContext';
 
@@ -217,12 +218,18 @@ function HomePage() {
               <h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left">TSRTC e-Ticket</h1>
               {isLoggedIn ? (
                   <div className="flex justify-center sm:justify-end gap-2">
-                      <a href="/my-tickets" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 border border-blue-300 rounded-md hover:bg-blue-500 transition-colors">My Tickets</a>
+                      {/* FIXED: Replaced <a> with <Link> for My Tickets */}
+                      <Link href="/my-tickets" className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 border border-blue-300 rounded-md hover:bg-blue-500 transition-colors">
+                          My Tickets
+                      </Link>
                       <button onClick={logout} className="text-xs sm:text-sm px-2 sm:px-3 py-1.5 bg-orange-500 rounded-md hover:bg-orange-600 transition-colors">Logout</button>
                   </div>
               ) : (
                   <div className="flex justify-center">
-                    <a href="/login" className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition-colors text-sm sm:text-base">Login</a>
+                    {/* FIXED: Replaced <a> with <Link> for Login */}
+                    <Link href="/login" className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg hover:bg-orange-600 transition-colors text-sm sm:text-base">
+                        Login
+                    </Link>
                   </div>
               )}
           </div>
@@ -345,7 +352,10 @@ function HomePage() {
           <div className="p-6 sm:p-8 text-center">
             <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-3 sm:mb-4">Welcome to TSRTC e-Ticketing</h2>
             <p className="text-gray-600 mb-4 sm:mb-6 text-sm sm:text-base">Please log in to book and manage your tickets.</p>
-            <a href="/login" className="w-full inline-block py-3 px-6 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-colors text-sm sm:text-base">Login or Sign Up</a>
+            {/* FIXED: Replaced <a> with <Link> for Login/Sign Up */}
+            <Link href="/login" className="w-full inline-block py-3 px-6 bg-orange-600 text-white font-bold rounded-lg hover:bg-orange-700 transition-colors text-sm sm:text-base">
+                Login or Sign Up
+            </Link>
           </div>
         )}
       </div>
